@@ -159,6 +159,18 @@
   .intent-info { background: rgba(59,130,246,0.15); color: var(--blue); }
   .intent-compare { background: rgba(245,158,11,0.15); color: var(--yellow); }
   .intent-buy { background: rgba(34,197,94,0.15); color: var(--green); }
+
+  /* Analysis Banner Styles */
+.analysis-banner { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; }
+.analysis-banner-header { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.analysis-banner-icon { font-size: 16px; line-height: 1; }
+.analysis-banner-title { font-size: 13px; color: #93C5FD; font-weight: 600; flex: 1; }
+.analysis-banner-detail { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(59,130,246,0.15); font-size: 13px; color: var(--text2); line-height: 1.6; }
+.analysis-banner.open .analysis-banner-detail { display: block; }
+.analysis-banner-toggle { font-size: 11px; color: #93C5FD; user-select: none; }
+.analysis-banner-detail strong { color: var(--text); }
+.analysis-banner-detail ul { margin: 8px 0 0; padding-left: 18px; }
+.analysis-banner-detail li { margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -184,13 +196,29 @@
   <button class="nav-btn" onclick="showSection('adcopy')">📢 광고 소재</button>
   <button class="nav-btn" onclick="showSection('landing')">🎯 랜딩페이지</button>
   <button class="nav-btn" onclick="showSection('actions')">🚀 즉시 실행</button>
+  <button class="nav-btn" onclick="showSection('methodology')">📋 분석 방법론</button>
 </div>
 
 <div class="main">
 
 <!-- ===================== OVERVIEW ===================== -->
 <div id="section-overview" class="section active">
-  <div class="section-title">전체 요약</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">📊</span>
+    <span class="analysis-banner-title">에어테이블 1,013건 영업 상담 메모 → Claude AI 인텐트 분석 결과</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    이 대시보드는 한화비전 키퍼 영업팀이 실제 고객과 상담하며 남긴 <strong>상담 메모 1,013건</strong>을 기반으로 합니다. 각 메모 1건은 고객 1명의 상담 기록이며, 여기에는 유입 채널·진입 경로·성과(성공/진행중/실패)·온도감 등이 포함됩니다.
+    <ul>
+      <li><strong>분석 방법:</strong> Claude AI가 메모를 한 건씩 읽고 구매 의향을 분류했습니다.</li>
+      <li><strong>인텐트 태그 8종:</strong> 구매의향 · 이탈신호 · 타이밍지연 · 비교검토 · 가격저항 · 기술질문 · 재관심 · 중립 (한 메모에 여러 태그 부여 가능)</li>
+      <li><strong>채널 점수:</strong> 채널별로 고객의 구매의향 강도를 0~100점으로 환산해 평균낸 값으로, 높을수록 구매 의지가 강한 고객이 많은 채널입니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">전체 요약</div>
   <div class="section-desc">1,000건 영업 상담 데이터 기반 마케팅 인사이트 핵심 지표</div>
 
   <div class="grid4" style="margin-bottom:20px;">
@@ -293,7 +321,22 @@
 
 <!-- ===================== CHANNELS ===================== -->
 <div id="section-channels" class="section">
-  <div class="section-title">채널별 심층 분석</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">📡</span>
+    <span class="analysis-banner-title">채널별 유입 고객의 구매의향 점수(0-100) 평균으로 성과 비교</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    채널별 성과는 각 채널로 유입된 고객들의 <strong>구매의향 점수를 평균</strong>낸 값으로 비교합니다.
+    <ul>
+      <li><strong>점수 산정:</strong> Claude AI가 고객 메모마다 구매 의지를 0~100점으로 매기고, 그 채널 전체 고객 점수를 단순 평균합니다.</li>
+      <li><strong>해석:</strong> 점수가 높을수록 그 채널로 들어온 고객의 구매 의지가 강하다는 뜻입니다.</li>
+      <li><strong>대상 채널:</strong> 페이스북(379건) · 네이버 검색광고(124건) · 네이버 오가닉(120건) · 당근마켓(89건) · 구글(73건) · 캐시노트(46건)</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">채널별 심층 분석</div>
   <div class="section-desc">각 채널 고객의 특성과 최적 메시지 전략</div>
 
   <div class="grid2">
@@ -387,7 +430,22 @@
 
 <!-- ===================== VOICE ===================== -->
 <div id="section-voice" class="section">
-  <div class="section-title">고객 실제 목소리</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">🗣️</span>
+    <span class="analysis-banner-title">실제 영업사원 상담 메모에서 Claude AI가 추출한 대표 발언 패턴</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    여기 나오는 고객 발언은 가공된 문구가 아니라 <strong>실제 상담 메모 1,013건에서 추출</strong>한 것입니다.
+    <ul>
+      <li><strong>수집 방법:</strong> Claude AI가 메모를 읽고 고객의 실제 표현·반응을 골라냈습니다.</li>
+      <li><strong>패턴 분류:</strong> 발언을 의미별로 묶어 두려움 · 비교 · 원하는 것 · 전환 순간 등으로 나눴습니다.</li>
+      <li><strong>활용:</strong> 고객이 실제로 쓰는 언어를 그대로 콘텐츠·광고에 반영하기 위한 근거 자료입니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">고객 실제 목소리</div>
   <div class="section-desc">실제 상담 메모에서 추출한 고객의 언어 — 블로그·광고 카피에 그대로 활용 가능</div>
 
   <div class="grid2">
@@ -517,7 +575,22 @@
 
 <!-- ===================== OBJECTIONS ===================== -->
 <div id="section-objections" class="section">
-  <div class="section-title">반박 포인트 가이드</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">🛡️</span>
+    <span class="analysis-banner-title">가격저항 137건 + 비교검토 247건 메모에서 반복된 저항 유형 6개 도출</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    고객이 구매를 망설이거나 거절할 때 반복적으로 나오는 <strong>저항 패턴</strong>을 정리한 탭입니다.
+    <ul>
+      <li><strong>분석 대상:</strong> 가격저항 태그 137건 + 비교검토 태그 247건(에스원·캡스·세콤 등 타사 비교) 메모.</li>
+      <li><strong>선정 기준:</strong> 메모에서 가장 자주 반복된 저항 유형 순으로 상위 6개를 도출했습니다.</li>
+      <li><strong>근거 표시:</strong> 각 저항 유형마다 실제로 몇 건의 메모에서 나타났는지 건수로 함께 보여줍니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">반박 포인트 가이드</div>
   <div class="section-desc">실제 고객 저항을 데이터로 분석한 반박 전략 — 블로그·광고·상담 대화에 활용</div>
 
   <div class="grid2">
@@ -563,7 +636,22 @@
 
 <!-- ===================== TIMING ===================== -->
 <div id="section-timing" class="section">
-  <div class="section-title">타이밍 트리거 전략</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">⏱️</span>
+    <span class="analysis-banner-title">타이밍지연 인텐트 387건(39%) 분석 → 5가지 공통 이탈 시점 발견</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    "지금은 아직"이라며 구매를 미루는 고객의 <strong>지연 시점</strong>을 분석한 탭입니다.
+    <ul>
+      <li><strong>타이밍지연이란:</strong> "인테리어 중이라", "오픈하면 그때", "지금은 아직" 등 시점을 미루는 신호로, 전체의 39%(387건)에 해당합니다.</li>
+      <li><strong>도출 방법:</strong> 387건의 지연 메모에서 미루는 이유가 겹치는 시점들을 묶어 공통 이탈 시점 5가지로 정리했습니다.</li>
+      <li><strong>활용:</strong> 고객이 미루는 바로 그 시점에 맞춰 재접근 타이밍을 잡기 위한 자료입니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">타이밍 트리거 전략</div>
   <div class="section-desc">387건(39%) 타이밍 이탈 고객을 회수하는 핵심 진입 포인트</div>
 
   <div class="grid2">
@@ -667,7 +755,22 @@
 
 <!-- ===================== CONTENT ===================== -->
 <div id="section-content" class="section">
-  <div class="section-title">콘텐츠 전략</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">📝</span>
+    <span class="analysis-banner-title">채널별 인텐트 분포 + 고객 발언 키워드 → 콘텐츠 방향 도출</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    어떤 콘텐츠를 만들지 데이터로 정한 탭입니다.
+    <ul>
+      <li><strong>입력 데이터:</strong> 채널마다 어떤 인텐트(구매의향·기술질문·가격저항 등)가 많은지 분포 + 고객이 자주 쓴 발언 키워드.</li>
+      <li><strong>아이디어 생성 기준:</strong> 각 채널·인텐트에서 고객이 궁금해하거나 불안해하는 지점을 풀어주는 방향으로 콘텐츠 주제를 제안합니다.</li>
+      <li><strong>목적:</strong> 막연한 감이 아니라 실제 고객 니즈에 근거한 콘텐츠 방향을 잡기 위함입니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">콘텐츠 전략</div>
   <div class="section-desc">블로그·SNS 콘텐츠 아이디어와 6주 캘린더</div>
 
   <div class="card" style="margin-bottom:20px;">
@@ -753,7 +856,22 @@
 
 <!-- ===================== AD COPY ===================== -->
 <div id="section-adcopy" class="section">
-  <div class="section-title">광고 소재 라이브러리</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">✍️</span>
+    <span class="analysis-banner-title">실제 고객 발언 + 채널 특성 + 인텐트 패턴 → 채널 맞춤 카피 생성</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    각 채널에 맞는 광고 카피를 데이터 기반으로 합성한 탭입니다.
+    <ul>
+      <li><strong>생성 기준:</strong> 실제 상담 메모에서 나온 고객 발언 + 채널별 특성(유입 고객 성향) + 주요 인텐트 패턴을 결합했습니다.</li>
+      <li><strong>고객 언어 활용:</strong> 마케터의 표현이 아니라 고객이 실제로 쓴 단어와 고민을 카피에 그대로 녹였습니다.</li>
+      <li><strong>주의:</strong> 카피는 AI가 생성한 초안으로, 집행 전 검수가 필요합니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">광고 소재 라이브러리</div>
   <div class="section-desc">실제 고객 언어 기반으로 만든 즉시 사용 가능한 광고 카피</div>
 
   <div class="grid3">
@@ -848,7 +966,22 @@
 
 <!-- ===================== LANDING ===================== -->
 <div id="section-landing" class="section">
-  <div class="section-title">랜딩페이지 개선 포인트</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">🎯</span>
+    <span class="analysis-banner-title">이탈신호 454건 + 가격저항 137건 → 전환을 막는 요소 6개 도출</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    랜딩페이지에서 고객이 이탈하게 만드는 <strong>전환 저해 요인</strong>을 정리한 탭입니다.
+    <ul>
+      <li><strong>분석 대상:</strong> 이탈신호 태그 454건(45%) + 가격저항 137건 + 타이밍지연 패턴 메모.</li>
+      <li><strong>도출 방법:</strong> 고객이 멈칫하거나 떠나는 이유로 반복 등장한 패턴을 묶어 전환을 막는 요소 6개로 정리했습니다.</li>
+      <li><strong>활용:</strong> 랜딩페이지에서 먼저 해소해줘야 할 우려를 우선순위대로 보여줍니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">랜딩페이지 개선 포인트</div>
   <div class="section-desc">고객 실제 언어 기반으로 도출한 전환율 향상 요소</div>
 
   <div class="grid2">
@@ -900,7 +1033,22 @@
 
 <!-- ===================== ACTIONS ===================== -->
 <div id="section-actions" class="section">
-  <div class="section-title">즉시 실행 액션 플랜</div>
+  <div class="analysis-banner" onclick="this.classList.toggle('open')">
+  <div class="analysis-banner-header">
+    <span class="analysis-banner-icon">🚀</span>
+    <span class="analysis-banner-title">인텐트 건수 × 채널 ROI × 전환 가능성 3요소 종합 → 우선순위 5개</span>
+    <span class="analysis-banner-toggle">자세히 ▾</span>
+  </div>
+  <div class="analysis-banner-detail">
+    지금 당장 무엇부터 해야 할지 <strong>우선순위</strong>를 정한 탭입니다.
+    <ul>
+      <li><strong>산정 기준:</strong> ① 해당 인텐트에 해당하는 고객이 얼마나 많은지(건수) ② 채널의 성과·효율(ROI) ③ 전환으로 이어질 가능성, 이 3가지를 종합했습니다.</li>
+      <li><strong>결과:</strong> 효과가 크고 실행하기 좋은 순서로 상위 5개 액션을 추렸습니다.</li>
+      <li><strong>목적:</strong> 한정된 리소스를 가장 효과 큰 곳에 먼저 투입하기 위한 실행 가이드입니다.</li>
+    </ul>
+  </div>
+</div>
+<div class="section-title">즉시 실행 액션 플랜</div>
   <div class="section-desc">데이터 기반 우선순위 순서 — Priority 1부터 착수</div>
 
   <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
@@ -979,9 +1127,225 @@
   </div>
 </div>
 
+
+<!-- ===================== METHODOLOGY ===================== -->
+<div id="section-methodology" class="section">
+<div class="section-title">분석 방법론</div>
+  <div class="section-desc">이 대시보드의 모든 인사이트가 어떤 데이터에서, 어떤 과정을 거쳐 나왔는지 투명하게 설명합니다 — 숫자를 믿고 의사결정에 활용하실 수 있도록</div>
+
+  <!-- 1. 데이터 출처 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">1. 데이터 출처 — 어디서 가져온 데이터인가</div>
+    <p style="font-size:14px;line-height:1.7;color:var(--text);margin:0 0 14px;">
+      이 분석은 <strong style="color:var(--brand);">한화비전 키퍼 영업팀이 실제 고객과 상담하며 직접 기록한 메모 1,013건</strong>을 바탕으로 합니다.
+      광고를 보고 문의한 고객 한 명 한 명에 대해, 영업사원이 통화·상담 내용을 정리해 둔 실제 현장 기록입니다.
+      가상의 설문이나 추정치가 아니라, <strong>돈을 쓸지 말지 고민하던 진짜 고객의 목소리</strong>가 담겨 있습니다.
+    </p>
+    <div class="grid3">
+      <div class="card" style="background:var(--bg3);">
+        <div class="card-title">데이터 보관 위치</div>
+        <div style="font-size:14px;color:var(--text);line-height:1.6;">에어테이블(Airtable)<br><span style="color:var(--text2);font-size:12px;">영업팀이 매일 쓰는 고객 관리 시스템</span></div>
+      </div>
+      <div class="card" style="background:var(--bg3);">
+        <div class="card-title">분석 대상 건수</div>
+        <div style="font-size:24px;font-weight:700;color:var(--brand);">1,013건</div>
+        <div style="color:var(--text2);font-size:12px;">고객 리드 1명당 1건의 메모</div>
+      </div>
+      <div class="card" style="background:var(--bg3);">
+        <div class="card-title">데이터 종류</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6;">유입날짜 · 유입채널 · 담당자 · 성과(성공/진행중/실패) · 온도감(상/중/하) · 실패사유 · 상담 메모</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 분석 과정 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">2. 분석 과정 — 어떻게 분석했는가</div>
+    <p style="font-size:14px;line-height:1.7;color:var(--text);margin:0 0 16px;">
+      사람이 1,013건의 메모를 일일이 읽고 분류하려면 며칠이 걸리고, 읽는 사람마다 기준이 달라집니다.
+      그래서 <strong style="color:var(--brand);">Claude(클로드)라는 AI</strong>가 메모를 <strong>한 건씩 정독</strong>한 뒤,
+      그 고객이 어떤 마음 상태인지를 아래 4단계로 자동 정리했습니다. AI는 동일한 기준을 1,013건 모두에 똑같이 적용하기 때문에 사람보다 일관성이 높습니다.
+    </p>
+    <div class="grid2" style="gap:14px;">
+      <div class="quote-card" style="border-left-color:var(--blue);">
+        <div class="quote-text" style="font-style:normal;">① 메모 한 건 꺼내기</div>
+        <div class="quote-meta">에어테이블에서 고객 상담 메모를 1건씩 불러옵니다</div>
+      </div>
+      <div class="quote-card" style="border-left-color:var(--purple);">
+        <div class="quote-text" style="font-style:normal;">② AI가 읽고 분류</div>
+        <div class="quote-meta">Claude가 메모를 읽고 "이 고객은 어떤 신호를 보내는가"를 8가지 유형으로 태그</div>
+      </div>
+      <div class="quote-card" style="border-left-color:var(--yellow);">
+        <div class="quote-text" style="font-style:normal;">③ 구매의향 점수 매기기</div>
+        <div class="quote-meta">같은 메모에 0~100점으로 구매 의지의 강도를 수치화</div>
+      </div>
+      <div class="quote-card" style="border-left-color:var(--green);">
+        <div class="quote-text" style="font-style:normal;">④ 결과 저장 후 집계</div>
+        <div class="quote-meta">1,013건 분석 결과를 모아 채널별·유형별 통계로 집계</div>
+      </div>
+    </div>
+    <p style="font-size:13px;line-height:1.6;color:var(--text2);margin:16px 0 0;background:var(--bg3);padding:12px 14px;border-radius:8px;">
+      💡 <strong style="color:var(--text);">한 고객이 여러 유형에 동시 해당될 수 있습니다.</strong>
+      예를 들어 "가격이 비싸고(가격저항) 다른 데도 알아보는 중(비교검토)"인 고객은 두 태그가 함께 붙습니다. 그래서 아래 8개 태그 건수의 합은 1,013건보다 큽니다.
+    </p>
+  </div>
+
+  <!-- 3. 인텐트 태그 상세 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">3. 고객 신호 8가지 유형 — 각 유형의 뜻과 실제 표현</div>
+    <p style="font-size:14px;line-height:1.7;color:var(--text);margin:0 0 14px;">
+      AI가 고객 메모를 분류한 8가지 신호입니다. 각 유형이 무슨 의미이고, 고객이 실제로 어떻게 말했을 때 그 유형으로 분류되는지 정리했습니다.
+    </p>
+    <table class="seo-table">
+      <thead>
+        <tr>
+          <th style="width:130px;">유형</th>
+          <th style="width:90px;">건수 / 비율</th>
+          <th>뜻</th>
+          <th>이렇게 말하면 이 유형</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-green">구매의향</span></td>
+          <td><strong style="color:var(--green);">310건</strong> / 31%</td>
+          <td>지금 사고 싶다는 명확한 구매 신호</td>
+          <td>"지금 사고 싶어요", "견적 좀 주세요", "언제 설치 가능해요?"</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-red">이탈신호</span></td>
+          <td><strong style="color:var(--red);">454건</strong> / 45%</td>
+          <td>관심이 식었거나 연락이 끊긴 이탈 징후</td>
+          <td>"관심 없어요", "안 살 것 같아요", (전화 안 받음 · 회신 없음)</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-yellow">타이밍지연</span></td>
+          <td><strong style="color:var(--yellow);">387건</strong> / 39%</td>
+          <td>사고 싶지만 지금은 때가 아니라는 시점 미루기</td>
+          <td>"인테리어 중이라", "오픈하면 그때", "지금은 아직이요"</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-blue">비교검토</span></td>
+          <td><strong style="color:var(--blue);">247건</strong> / 25%</td>
+          <td>경쟁사와 비교하며 알아보는 중</td>
+          <td>"에스원·캡스·세콤도 알아보고 있어요", "다른 데랑 비교 중"</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-orange">가격저항</span></td>
+          <td><strong style="color:var(--brand);">137건</strong> / 14%</td>
+          <td>가격이 부담된다며 머뭇거림</td>
+          <td>"너무 비싸요", "부담돼요", "할인 더 안 되나요?"</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-purple">기술질문</span></td>
+          <td><strong style="color:var(--purple);">140건</strong> / 14%</td>
+          <td>제품 성능·사양에 대한 구체적 문의</td>
+          <td>"화질이 얼마나 되나요?", "인터넷 없어도 되나요?"</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(236,72,153,0.15);color:#EC4899;">재관심</span></td>
+          <td><strong style="color:#EC4899;">33건</strong> / 3%</td>
+          <td>한번 거절했다가 다시 문의해 온 고객</td>
+          <td>"전에 거절했는데 다시 생각해보니…", "그때 그 견적 아직 유효한가요?"</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(107,114,128,0.18);color:#9BA3BC;">중립</span></td>
+          <td><strong style="color:var(--text2);">253건</strong> / 25%</td>
+          <td>아직 마음이 정해지지 않은 초기 탐색 단계</td>
+          <td>"그냥 한번 알아보려고요", "정보만 좀 주세요"</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. 채널 점수 기준 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">4. 채널 구매의향 점수 — 0~100점이 무슨 뜻인가</div>
+    <p style="font-size:14px;line-height:1.7;color:var(--text);margin:0 0 14px;">
+      "어느 광고 채널에서 들어온 고객이 가장 사고 싶어 하는가"를 한눈에 비교하기 위한 점수입니다.
+      AI가 고객 한 명 한 명의 메모를 읽고 <strong style="color:var(--brand);">구매 의지를 0점(전혀 살 마음 없음)~100점(당장 사고 싶음)으로 환산</strong>한 뒤,
+      그 채널로 들어온 고객 전원의 점수를 단순 평균낸 값입니다. <strong>점수가 높을수록 그 채널 고객의 구매 의지가 강하다</strong>는 뜻입니다.
+    </p>
+    <div class="grid2">
+      <div class="card" style="background:var(--bg3);">
+        <div class="card-title">점수가 높다는 것은</div>
+        <div class="bar-row" style="margin-top:6px;"><span class="bar-label">80~100점</span><div class="bar-track"><div class="bar-fill" style="width:95%;background:var(--green);"></div></div><span class="bar-val" style="color:var(--green);">매우 강함</span></div>
+        <div class="bar-row"><span class="bar-label">40~60점</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--yellow);"></div></div><span class="bar-val" style="color:var(--yellow);">보통</span></div>
+        <div class="bar-row"><span class="bar-label">0~30점</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--red);"></div></div><span class="bar-val" style="color:var(--red);">약함</span></div>
+      </div>
+      <div class="card" style="background:var(--bg3);">
+        <div class="card-title">계산 예시 (이해를 돕기 위한 예시)</div>
+        <p style="font-size:13px;line-height:1.7;color:var(--text);margin:6px 0 0;">
+          어떤 채널로 고객 3명이 들어왔고 점수가 각각 <span style="color:var(--green);">90점</span>, <span style="color:var(--yellow);">40점</span>, <span style="color:var(--red);">20점</span>이라면<br>
+          → 평균 = (90+40+20) ÷ 3 = <strong style="color:var(--brand);">50점</strong><br>
+          <span style="color:var(--text2);font-size:12px;">실제 채널 평균: 네이버 오가닉 44.2점이 최고, 당근마켓 24.8점이 최저</span>
+        </p>
+      </div>
+    </div>
+    <p style="font-size:13px;line-height:1.6;color:var(--text2);margin:14px 0 0;background:var(--bg3);padding:12px 14px;border-radius:8px;">
+      💡 점수는 <strong style="color:var(--text);">고객의 절대적 등급이 아니라 채널끼리 비교하기 위한 상대 지표</strong>입니다.
+      "이 채널 고객이 저 채널 고객보다 더 적극적이다"를 판단하는 용도로 보시면 됩니다.
+    </p>
+  </div>
+
+  <!-- 5. 데이터 신뢰도 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">5. 데이터 신뢰도 — 왜 이 분석을 믿을 수 있는가</div>
+    <div class="grid3">
+      <div class="card" style="background:var(--bg3);border-top:3px solid var(--green);">
+        <div style="font-size:15px;font-weight:700;color:var(--green);margin-bottom:8px;">✓ 실제 현장 데이터</div>
+        <p style="font-size:13px;line-height:1.6;color:var(--text);margin:0;">설문 응답이나 추정이 아니라, 영업사원이 진짜 고객과 통화하며 남긴 기록입니다. 고객의 실제 망설임과 결정이 그대로 담겨 있습니다.</p>
+      </div>
+      <div class="card" style="background:var(--bg3);border-top:3px solid var(--blue);">
+        <div style="font-size:15px;font-weight:700;color:var(--blue);margin-bottom:8px;">✓ 충분한 표본 수</div>
+        <p style="font-size:13px;line-height:1.6;color:var(--text);margin:0;">1,013건은 일부만 골라본 것이 아니라 해당 기간 전체 고객을 빠짐없이 분석한 결과입니다. 우연이나 예외가 아닌 전체 경향을 보여줍니다.</p>
+      </div>
+      <div class="card" style="background:var(--bg3);border-top:3px solid var(--purple);">
+        <div style="font-size:15px;font-weight:700;color:var(--purple);margin-bottom:8px;">✓ AI의 일관된 기준</div>
+        <p style="font-size:13px;line-height:1.6;color:var(--text);margin:0;">사람은 컨디션·피로에 따라 판단이 흔들리지만, AI는 1,013건 전부에 똑같은 기준을 적용합니다. 분류의 일관성이 사람보다 높습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 분석 한계 -->
+  <div class="card" style="border-left:3px solid var(--yellow);">
+    <div class="card-title" style="color:var(--yellow);">6. 분석 한계 — 솔직하게 밝히는 한계점</div>
+    <p style="font-size:14px;line-height:1.7;color:var(--text);margin:0 0 14px;">
+      이 분석은 강력하지만 만능은 아닙니다. 의사결정 시 아래 한계를 함께 고려해 주세요.
+    </p>
+    <div class="grid2" style="gap:14px;">
+      <div class="quote-card" style="border-left-color:var(--yellow);">
+        <div class="quote-text" style="font-style:normal;">메모 품질에 좌우됩니다</div>
+        <div class="quote-meta">영업사원이 짧게 적었거나 핵심을 빠뜨린 메모는 AI도 정확히 분류하기 어렵습니다. "기록된 만큼만" 분석됩니다.</div>
+      </div>
+      <div class="quote-card" style="border-left-color:var(--yellow);">
+        <div class="quote-text" style="font-style:normal;">특정 기간의 데이터입니다</div>
+        <div class="quote-meta">영업팀 운영 기간에 수집된 데이터로, 계절·이벤트·시장 변화에 따라 경향이 달라질 수 있습니다. 정기적인 재분석이 필요합니다.</div>
+      </div>
+      <div class="quote-card" style="border-left-color:var(--yellow);">
+        <div class="quote-text" style="font-style:normal;">채널별 건수 차이가 있습니다</div>
+        <div class="quote-meta">페이스북 379건처럼 많은 채널은 신뢰도가 높지만, 캐시노트 46건처럼 적은 채널은 표본이 작아 점수가 흔들릴 수 있습니다.</div>
+      </div>
+      <div class="quote-card" style="border-left-color:var(--yellow);">
+        <div class="quote-text" style="font-style:normal;">AI 판단도 100%는 아닙니다</div>
+        <div class="quote-meta">애매한 표현은 AI가 다르게 해석할 수 있습니다. 큰 흐름(경향)을 읽는 데는 충분하지만, 개별 건의 100% 정확성을 보장하지는 않습니다.</div>
+      </div>
+    </div>
+    <p style="font-size:13px;line-height:1.6;color:var(--text2);margin:16px 0 0;background:var(--bg3);padding:12px 14px;border-radius:8px;">
+      ⚠️ <strong style="color:var(--text);">결론:</strong> 이 대시보드는 "확정된 정답"이 아니라 <strong style="color:var(--text);">1,013명 고객의 실제 목소리에서 읽어낸 강력한 방향 지표</strong>입니다.
+      마케팅 전략의 출발점으로 활용하시고, 실행 결과를 다시 데이터로 쌓아 분석을 고도화하는 것을 권장합니다.
+    </p>
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <script>
+
+function toggleBanner(el) {
+  el.closest('.analysis-banner').classList.toggle('open');
+}
+
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
