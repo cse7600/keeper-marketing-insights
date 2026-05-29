@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>키퍼 마케팅 인사이트 — 영업 데이터 기반 1,000건 분석</title>
+<style>
+  :root {
+    --brand: #FF5A1F;
+    --brand-dark: #C94010;
+    --bg: #0F1117;
+    --bg2: #1A1D27;
+    --bg3: #252836;
+    --border: #2E3245;
+    --text: #E8EAF0;
+    --text2: #9BA3BC;
+    --green: #22C55E;
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --blue: #3B82F6;
+    --purple: #8B5CF6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; }
+
+  /* Layout */
+  .header { background: linear-gradient(135deg, #1A1D27 0%, #0F1117 100%); border-bottom: 1px solid var(--border); padding: 24px 32px; display: flex; align-items: center; gap: 16px; }
+  .header-icon { width: 48px; height: 48px; background: var(--brand); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .header-meta { color: var(--text2); font-size: 13px; margin-top: 2px; }
+  .header-badge { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); border-radius: 6px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+
+  .nav { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; gap: 0; overflow-x: auto; }
+  .nav-btn { padding: 14px 20px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+  .nav-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+  .nav-btn:hover { color: var(--text); }
+
+  .main { padding: 24px 32px; max-width: 1400px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+  /* Stats */
+  .stat-big { font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 13px; color: var(--text2); }
+  .stat-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+  /* Tags */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .tag-green { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .tag-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .tag-purple { background: rgba(139,92,246,0.15); color: var(--purple); }
+  .tag-orange { background: rgba(255,90,31,0.15); color: var(--brand); }
+
+  /* Progress bars */
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-label { width: 130px; font-size: 13px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .bar-val { width: 50px; text-align: right; font-size: 13px; font-weight: 600; }
+
+  /* Channel cards */
+  .ch-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .ch-name { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .ch-score { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+  .ch-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .ch-persona { font-size: 13px; color: var(--text2); margin: 12px 0 8px; padding: 10px; background: var(--bg2); border-radius: 6px; line-height: 1.5; }
+  .ch-message { font-size: 13px; color: var(--text); margin-bottom: 8px; line-height: 1.5; }
+  .warning-box { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #FCA5A5; margin-top: 8px; }
+
+  /* Quote cards */
+  .quote-card { background: var(--bg3); border-left: 3px solid var(--brand); border-radius: 0 8px 8px 0; padding: 12px 14px; margin-bottom: 10px; }
+  .quote-text { font-size: 14px; font-style: italic; margin-bottom: 6px; color: var(--text); }
+  .quote-meta { font-size: 12px; color: var(--text2); }
+  .quote-insight { font-size: 12px; color: #93C5FD; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+
+  /* Action items */
+  .action-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; gap: 14px; }
+  .action-num { width: 32px; height: 32px; border-radius: 8px; background: var(--brand); color: white; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .action-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .action-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .action-channel { margin-top: 8px; }
+  .action-impact { margin-top: 6px; font-size: 12px; color: var(--green); }
+
+  /* Content calendar */
+  .cal-week { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; }
+  .cal-week-num { position: absolute; top: -10px; left: 16px; background: var(--brand); color: white; font-weight: 800; font-size: 11px; padding: 2px 10px; border-radius: 20px; }
+  .cal-content { font-size: 14px; font-weight: 600; margin-top: 8px; margin-bottom: 8px; }
+  .cal-detail { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  /* Copy boxes */
+  .copy-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .copy-headline { font-size: 18px; font-weight: 800; color: var(--brand); margin-bottom: 8px; }
+  .copy-body { font-size: 14px; line-height: 1.6; color: var(--text2); }
+  .copy-channel-badge { margin-top: 10px; }
+
+  /* Objection rebuttals */
+  .obj-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .obj-question { font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .obj-answer { font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+  .obj-evidence { font-size: 12px; color: var(--text2); background: var(--bg2); border-radius: 6px; padding: 8px 10px; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+  .section-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .section-desc { font-size: 14px; color: var(--text2); margin-bottom: 20px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .grid3, .grid4 { grid-template-columns: 1fr 1fr; }
+    .main { padding: 16px; }
+  }
+  @media (max-width: 600px) {
+    .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+    .header { padding: 16px; }
+    .nav { padding: 0 16px; }
+  }
+
+  /* Keyword pills */
+  .kw-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .kw-pill { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 13px; color: var(--text2); }
+  .kw-pill strong { color: var(--text); }
+
+  /* Intent bars */
+  .intent-bar { margin-bottom: 14px; }
+  .intent-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .intent-name { width: 90px; font-size: 13px; }
+  .intent-count { width: 40px; font-size: 12px; font-weight: 700; text-align: right; }
+
+  /* LP improvement */
+  .lp-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .lp-element { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .lp-issue { font-size: 12px; color: var(--red); background: rgba(239,68,68,0.08); border-radius: 4px; padding: 4px 8px; margin-bottom: 8px; display: inline-block; }
+  .lp-solution { font-size: 13px; line-height: 1.5; margin-bottom: 8px; }
+  .lp-quote { font-size: 12px; color: var(--blue); font-style: italic; }
+
+  /* Timing */
+  .timing-item { display: flex; gap: 12px; padding: 12px; background: var(--bg3); border-radius: 8px; margin-bottom: 8px; align-items: flex-start; }
+  .timing-icon { font-size: 20px; flex-shrink: 0; }
+  .timing-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .timing-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  /* SEO keywords table */
+  .seo-table { width: 100%; border-collapse: collapse; }
+  .seo-table th { background: var(--bg3); padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text2); border-bottom: 1px solid var(--border); }
+  .seo-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; }
+  .seo-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .intent-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .intent-info { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .intent-compare { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .intent-buy { background: rgba(34,197,94,0.15); color: var(--green); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">📊</div>
+  <div>
+    <div style="font-size:20px;font-weight:800;">키퍼 마케팅 인사이트 대시보드</div>
+    <div class="header-meta">영업 상담 1,000건 분석 · Claude Opus 합성 · 2026-05-29 기준</div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+    <span class="header-badge">마케팅팀 전용</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showSection('overview')">📈 전체 요약</button>
+  <button class="nav-btn" onclick="showSection('channels')">📡 채널 분석</button>
+  <button class="nav-btn" onclick="showSection('voice')">💬 고객 목소리</button>
+  <button class="nav-btn" onclick="showSection('objections')">🛡️ 반박 포인트</button>
+  <button class="nav-btn" onclick="showSection('timing')">⏰ 타이밍 트리거</button>
+  <button class="nav-btn" onclick="showSection('content')">✍️ 콘텐츠 전략</button>
+  <button class="nav-btn" onclick="showSection('adcopy')">📢 광고 소재</button>
+  <button class="nav-btn" onclick="showSection('landing')">🎯 랜딩페이지</button>
+  <button class="nav-btn" onclick="showSection('actions')">🚀 즉시 실행</button>
+</div>
+
+<div class="main">
+
+<!-- ===================== OVERVIEW ===================== -->
+<div id="section-overview" class="section active">
+  <div class="section-title">전체 요약</div>
+  <div class="section-desc">1,000건 영업 상담 데이터 기반 마케팅 인사이트 핵심 지표</div>
+
+  <div class="grid4" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">분석 총 건수</div>
+      <div class="stat-big" style="color:var(--brand);">1,000</div>
+      <div class="stat-label">실제 영업 상담 메모</div>
+    </div>
+    <div class="card">
+      <div class="card-title">구매의향 리드</div>
+      <div class="stat-big" style="color:var(--green);">310</div>
+      <div class="stat-label">전체 31% · 전환 잠재</div>
+    </div>
+    <div class="card">
+      <div class="card-title">타이밍 이탈</div>
+      <div class="stat-big" style="color:var(--yellow);">387</div>
+      <div class="stat-label">전체 39% · 회수 가능</div>
+    </div>
+    <div class="card">
+      <div class="card-title">경쟁사 언급</div>
+      <div class="stat-big" style="color:var(--blue);">76</div>
+      <div class="stat-label">전환 공략 대상</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">인텐트 태그 분포 (전체 1,000건)</div>
+      <div style="margin-top:8px;">
+        <div class="bar-row"><span class="bar-label">이탈신호</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--red);"></div></div><span class="bar-val" style="color:var(--red);">454</span></div>
+        <div class="bar-row"><span class="bar-label">타이밍지연</span><div class="bar-track"><div class="bar-fill" style="width:39%;background:var(--yellow);"></div></div><span class="bar-val" style="color:var(--yellow);">387</span></div>
+        <div class="bar-row"><span class="bar-label">구매의향</span><div class="bar-track"><div class="bar-fill" style="width:31%;background:var(--green);"></div></div><span class="bar-val" style="color:var(--green);">310</span></div>
+        <div class="bar-row"><span class="bar-label">중립</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:#6B7280;"></div></div><span class="bar-val">253</span></div>
+        <div class="bar-row"><span class="bar-label">비교검토</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--blue);"></div></div><span class="bar-val" style="color:var(--blue);">247</span></div>
+        <div class="bar-row"><span class="bar-label">기술질문</span><div class="bar-track"><div class="bar-fill" style="width:14%;background:var(--purple);"></div></div><span class="bar-val" style="color:var(--purple);">140</span></div>
+        <div class="bar-row"><span class="bar-label">가격저항</span><div class="bar-track"><div class="bar-fill" style="width:14%;background:#F97316;"></div></div><span class="bar-val" style="color:#F97316;">137</span></div>
+        <div class="bar-row"><span class="bar-label">재관심</span><div class="bar-track"><div class="bar-fill" style="width:3%;background:#EC4899;"></div></div><span class="bar-val" style="color:#EC4899;">33</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">채널별 성과 한눈에</div>
+      <div style="margin-top:8px;">
+        <div class="bar-row"><span class="bar-label">네이버(오가닉)</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:var(--green);"></div></div><span class="bar-val" style="color:var(--green);">44.2</span></div>
+        <div class="bar-row"><span class="bar-label">네이버(검색광고)</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:#86EFAC;"></div></div><span class="bar-val">34.8</span></div>
+        <div class="bar-row"><span class="bar-label">구글</span><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--blue);"></div></div><span class="bar-val">33.6</span></div>
+        <div class="bar-row"><span class="bar-label">페이스북</span><div class="bar-track"><div class="bar-fill" style="width:62%;background:var(--yellow);"></div></div><span class="bar-val">31.2</span></div>
+        <div class="bar-row"><span class="bar-label">캐시노트</span><div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--purple);"></div></div><span class="bar-val">29.1</span></div>
+        <div class="bar-row"><span class="bar-label">당근마켓</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--red);"></div></div><span class="bar-val" style="color:var(--red);">24.8</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;">수치 = 구매의향 평균점수 (0-100)</div>
+    </div>
+  </div>
+
+  <div class="grid3" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">매장규모 분포</div>
+      <div class="bar-row" style="margin-top:8px;"><span class="bar-label">10~20평</span><div class="bar-track"><div class="bar-fill" style="width:37%;background:var(--brand);"></div></div><span class="bar-val">167</span></div>
+      <div class="bar-row"><span class="bar-label">50평 이상</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--blue);"></div></div><span class="bar-val">113</span></div>
+      <div class="bar-row"><span class="bar-label">10평 미만</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:#8B5CF6;"></div></div><span class="bar-val">100</span></div>
+      <div class="bar-row"><span class="bar-label">20~30평</span><div class="bar-track"><div class="bar-fill" style="width:21%;background:var(--green);"></div></div><span class="bar-val">93</span></div>
+      <div class="bar-row"><span class="bar-label">30~40평</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--yellow);"></div></div><span class="bar-val">47</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">고객 메모 핵심 키워드 빈도</div>
+      <div class="kw-group" style="margin-top:8px;">
+        <div class="kw-pill">'월' <strong>231회</strong></div>
+        <div class="kw-pill">'구매' <strong>214회</strong></div>
+        <div class="kw-pill">'앱' <strong>67회</strong></div>
+        <div class="kw-pill">'가격' <strong>78회</strong></div>
+        <div class="kw-pill">'CCTV' <strong>59회</strong></div>
+        <div class="kw-pill">'약정' <strong>39회</strong></div>
+        <div class="kw-pill">'오픈' <strong>47회</strong></div>
+        <div class="kw-pill">'인테리어' <strong>45회</strong></div>
+        <div class="kw-pill">'비용' <strong>36회</strong></div>
+        <div class="kw-pill">'할부' <strong>32회</strong></div>
+        <div class="kw-pill">'싸' <strong>29회</strong></div>
+        <div class="kw-pill">'비싸' <strong>27회</strong></div>
+        <div class="kw-pill">'부담' <strong>23회</strong></div>
+        <div class="kw-pill">'렌탈' <strong>23회</strong></div>
+        <div class="kw-pill">'타사' <strong>22회</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">3대 핵심 기회</div>
+      <div class="timing-item" style="margin-top:8px;margin-bottom:0;">
+        <div class="timing-icon">🔥</div>
+        <div><div class="timing-title">타이밍 이탈 회수</div><div class="timing-desc">387건(39%) 인테리어/오픈 준비 중 고객 — 사전예약 폼으로 재진입</div></div>
+      </div>
+      <div class="timing-item" style="margin-bottom:0;">
+        <div class="timing-icon">⚔️</div>
+        <div><div class="timing-title">경쟁사 약정만료 공략</div><div class="timing-desc">에스원/캡스/KT텔레캅 76건 언급 — 갈아타기 전환 캠페인</div></div>
+      </div>
+      <div class="timing-item" style="margin-bottom:0;">
+        <div class="timing-icon">📈</div>
+        <div><div class="timing-title">네이버 오가닉 증폭</div><div class="timing-desc">최고 성과 채널(구매의향 47%) — 블로그/지식인 집중 투자</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CHANNELS ===================== -->
+<div id="section-channels" class="section">
+  <div class="section-title">채널별 심층 분석</div>
+  <div class="section-desc">각 채널 고객의 특성과 최적 메시지 전략</div>
+
+  <div class="grid2">
+
+    <div class="ch-card" style="border-top:3px solid var(--green);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ch-name">🟢 네이버 오가닉</div>
+        <span class="tag tag-green">최고 성과</span>
+      </div>
+      <div class="ch-score" style="color:var(--green);">44.2점</div>
+      <div class="ch-row"><span>유입 120건</span><span>구매의향 47%</span><span>이탈 38%</span></div>
+      <div class="ch-persona">능동적으로 '한화비전 키퍼'를 검색해 들어온 고관여 사장님. 이미 브랜드를 인지하고 도입을 진지하게 검토 중</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">최적 메시지 방향</div>
+      <div class="ch-message">'왜 키퍼인가'를 다시 설득하기보다 지금 도입하면 받는 혜택·설치 절차·실제 비용을 구체적으로 제시해 의사결정을 마무리시켜야 합니다.</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">콘텐츠 방향</div>
+      <div class="ch-message" style="color:var(--text2);">실제 매장 설치 후기, 평형별 견적 시뮬레이터, 도입 절차 3단계 안내처럼 구매 직전 정보를 채워주는 콘텐츠</div>
+      <div class="warning-box">⚠️ 이미 관심 있는 고객에게 일반론적 브랜드 홍보를 반복하면 이탈. 정보 밀도로 승부할 것.</div>
+    </div>
+
+    <div class="ch-card" style="border-top:3px solid var(--purple);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ch-name">🟣 캐시노트</div>
+        <span class="tag tag-purple">숨겨진 강자</span>
+      </div>
+      <div class="ch-score" style="color:var(--purple);">29.1점</div>
+      <div class="ch-row"><span>유입 46건</span><span>구매의향 41%</span><span>이탈 39%</span></div>
+      <div class="ch-persona">매출·정산을 챙기는 실속형 자영업자. 구매의향(41%)이 높지만 비용 대비 효율을 따지는 합리적 소비층</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">최적 메시지 방향</div>
+      <div class="ch-message">'월 정액 = 사업 운영비' 프레임으로 접근. CCTV를 '손실 방지·인건비 절감 투자'로 포지셔닝하세요.</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">콘텐츠 방향</div>
+      <div class="ch-message" style="color:var(--text2);">도난·분쟁 1건 막으면 월 구독료 회수된다는 ROI 계산, 세금계산서/비용처리 가능 안내</div>
+      <div class="warning-box">⚠️ 감성보다 숫자(절감액, 회수기간)가 없으면 외면. 결제 마찰 최소화 필수.</div>
+    </div>
+
+    <div class="ch-card" style="border-top:3px solid var(--blue);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ch-name">🔵 네이버 검색광고</div>
+        <span class="tag tag-blue">비교검토 단계</span>
+      </div>
+      <div class="ch-score" style="color:var(--blue);">34.8점</div>
+      <div class="ch-row"><span>유입 124건</span><span>구매의향 30%</span><span>이탈 46%</span></div>
+      <div class="ch-persona">'매장 CCTV', '가게 보안' 등을 검색하다 광고로 유입된 정보 탐색 단계 고객. 오가닉보다 관여도 낮고 비교 중</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">최적 메시지 방향</div>
+      <div class="ch-message">검색 의도에 정확히 맞는 답(평형별 가격, 경쟁사 대비 장점)을 즉시 제시해 비교 우위를 각인시키세요.</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">콘텐츠 방향</div>
+      <div class="ch-message" style="color:var(--text2);">'OO평 매장 CCTV 비용 총정리', '렌탈 vs 키퍼 vs 홈캠 비교표'처럼 검색 키워드를 그대로 받는 비교형 콘텐츠</div>
+      <div class="warning-box">⚠️ 랜딩 후 정보가 부실하면 즉시 타사로 이탈(46%). 광고 카피와 랜딩 내용 일치 필수.</div>
+    </div>
+
+    <div class="ch-card" style="border-top:3px solid #60A5FA;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ch-name">🌐 구글</div>
+        <span class="tag tag-blue">합리적 비교층</span>
+      </div>
+      <div class="ch-score" style="color:#60A5FA;">33.6점</div>
+      <div class="ch-row"><span>유입 73건</span><span>구매의향 32%</span><span>이탈 48%</span></div>
+      <div class="ch-persona">검색·비교에 익숙한 디지털 친화 사장님. 여러 옵션을 폭넓게 비교하는 신중한 검토층</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">최적 메시지 방향</div>
+      <div class="ch-message">타사와의 객관적 스펙·가격 비교를 투명하게 제시해 '비교 끝판왕'으로 인식시키세요. 화질 2배·기간 2배 같은 정량 우위 강조.</div>
+      <div class="warning-box">⚠️ 감성 마케팅보다 근거·스펙 부족이 치명적. 이탈률 48%로 비교 단계에서 놓치기 쉬움.</div>
+    </div>
+
+    <div class="ch-card" style="border-top:3px solid var(--yellow);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ch-name">📘 페이스북</div>
+        <span class="tag tag-yellow">대량 유입·저온도</span>
+      </div>
+      <div class="ch-score" style="color:var(--yellow);">31.2점</div>
+      <div class="ch-row"><span>유입 379건 (최대)</span><span>구매의향 28%</span><span>이탈 46%</span></div>
+      <div class="ch-persona">명확한 구매 의도 없이 피드를 보다 노출된 저관여 대량 유입층. 흥미는 끌렸으나 진지한 검토 전 단계</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">최적 메시지 방향</div>
+      <div class="ch-message">'우리 가게도 위험할 수 있다'는 문제 인식을 먼저 자극한 뒤, 부담 없는 첫 진입(무료 견적·평형별 가격)으로 유도하세요.</div>
+      <div class="warning-box">⚠️ 처음부터 가격/약정 같은 무거운 정보를 던지면 즉시 이탈. 관심 유발 → 가벼운 전환 순서 필수.</div>
+    </div>
+
+    <div class="ch-card" style="border-top:3px solid var(--red);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="ch-name">🥕 당근마켓</div>
+        <span class="tag tag-red">예산 축소 권장</span>
+      </div>
+      <div class="ch-score" style="color:var(--red);">24.8점</div>
+      <div class="ch-row"><span>유입 89건</span><span>구매의향 21%</span><span>이탈 60% ⚠️</span></div>
+      <div class="ch-persona">동네 기반 초소형·저예산 자영업자. 가격 민감도 최고, 이탈 60%로 전환 난이도 가장 높음</div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">최적 메시지 방향</div>
+      <div class="ch-message">고가 솔루션 푸시 대신 '1대부터, 약정 없이 가볍게 시작'하는 최소 진입 상품과 동네 신뢰(지역 설치 사례)를 강조하세요.</div>
+      <div class="warning-box">⚠️ 이탈 60% — 고관여 영업 리소스 과투입 금지. 예산 50% 축소 → 네이버 이동 권장.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== VOICE ===================== -->
+<div id="section-voice" class="section">
+  <div class="section-title">고객 실제 목소리</div>
+  <div class="section-desc">실제 상담 메모에서 추출한 고객의 언어 — 블로그·광고 카피에 그대로 활용 가능</div>
+
+  <div class="grid2">
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title" style="color:var(--red);">😰 두려움·불안 표현</div>
+        <div class="quote-card">
+          <div class="quote-text">"3년 지나면 A/S 제대로 될까요?"</div>
+          <div class="quote-meta">사후관리 불안 · 반복 패턴</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"여기 강원도인데 고장 나면 누가 와요?"</div>
+          <div class="quote-meta">지방 고객 공통 불안</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"인터넷이 안 깔려 있는데 되나요?"</div>
+          <div class="quote-meta">기술 접근성 불안</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"직원들 관리가 안 돼서 불안해요"</div>
+          <div class="quote-meta">내부 관리 니즈 · 고관여</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"고객이랑 시비 붙으면 증거가 없어요"</div>
+          <div class="quote-meta">분쟁 리스크 인식 · 강한 구매 동기</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--blue);">🔍 비교할 때 쓰는 표현</div>
+        <div class="quote-card">
+          <div class="quote-text">"KT는 2대에 8만원에 설치비 따로래요"</div>
+          <div class="quote-insight">💡 KT텔레캅 대비 총비용 투명 비교 기회</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"에스원 8대 88,000원 쓰고 있어요"</div>
+          <div class="quote-insight">💡 동일 대수 화질·기간 비교로 우위 설명</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"세콤 12대 월 9만원인데 키퍼가 더 비싸네요"</div>
+          <div class="quote-insight">💡 단위당 비용 재프레이밍 필요</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"렌탈보다 왜 저렴해요? / 홈캠보다 왜 비싸요?"</div>
+          <div class="quote-insight">💡 가격 구조 투명 설명이 전환의 핵심</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"타사에서 1대당 70만원이라 부담"</div>
+          <div class="quote-insight">💡 소형 패키지의 체감 가격 역전 포인트</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title" style="color:var(--green);">✅ 원하는 것 표현</div>
+        <div class="quote-card">
+          <div class="quote-text">"하루라도 빨리 설치하고 싶어요"</div>
+          <div class="quote-meta">오픈 임박 고객 · 속도 니즈 강함</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"오픈 전에 다 끝내고 싶어요"</div>
+          <div class="quote-meta">신규 오픈 타이밍 트리거</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"화질이랑 저장기간이 얼마나 되나요?"</div>
+          <div class="quote-meta">스펙 비교 중 · 구매 의향 확인</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"주말에도 연락되나요?"</div>
+          <div class="quote-meta">빠른 구매 의향 신호</div>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">"세금계산서 발행 되죠?"</div>
+          <div class="quote-meta">법인/사업자 고객 · 결재 준비 단계</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--yellow);">⚡ 전환 결정을 만든 순간</div>
+        <div class="quote-card" style="border-left-color:var(--green);">
+          <div class="quote-text">"렌탈보다 저렴한 이유 / 홈캠보다 비쌀 수밖에 없는 이유에 대해 납득하셨음 → 즉시 구매"</div>
+          <div class="quote-meta" style="color:var(--green);">✅ 전환 패턴 — 가격 구조 납득이 핵심</div>
+        </div>
+        <div class="quote-card" style="border-left-color:var(--green);">
+          <div class="quote-text">"급하여 지금 구매하셨다고 하며, 이미 오픈하여 영업 중이라 하루라도 설치일을 당기고 싶다"</div>
+          <div class="quote-meta" style="color:var(--green);">✅ 전환 패턴 — 오픈 임박 = 즉시 결정</div>
+        </div>
+        <div class="quote-card" style="border-left-color:var(--green);">
+          <div class="quote-text">"U+ 3년 약정 곧 만료, CCTV는 키퍼 확정"</div>
+          <div class="quote-meta" style="color:var(--green);">✅ 전환 패턴 — 약정만료 = 결정 완료</div>
+        </div>
+        <div class="quote-card" style="border-left-color:var(--green);">
+          <div class="quote-text">"매장 작아서 1대면 된다고 하셔서 2대 가격에 타사 1대보다 저렴하게 제공한다고 설득 → 실내 2대 결제 확정"</div>
+          <div class="quote-meta" style="color:var(--green);">✅ 전환 패턴 — 체감 가격 역전</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title" style="font-size:16px;">업종별 핵심 메시지</div>
+  <div class="grid-auto" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-title">🍽️ 음식점·카페</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-top:4px;">"오픈 일정에 딱 맞춰 설치,<br>손님 분쟁과 직원 사고는 화질로 끝냅니다"</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📚 학원·교육</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-top:4px;">"학부모 안심과 원생 안전,<br>출입과 사고 순간을 또렷하게 기록합니다"</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏭 공장·창고</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-top:4px;">"포장구역 정밀 촬영으로<br>물류 클레임과 무단투기를 잡아냅니다"</div>
+    </div>
+    <div class="card">
+      <div class="card-title">💼 사무실</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-top:4px;">"근태와 자산 관리,<br>야간 무인 시간대까지 빈틈없이 모니터링합니다"</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🛍️ 일반 소매점</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-top:4px;">"작은 가게도 1~2대로 충분,<br>보안업체 월 요금 없이 한 번에 끝냅니다"</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== OBJECTIONS ===================== -->
+<div id="section-objections" class="section">
+  <div class="section-title">반박 포인트 가이드</div>
+  <div class="section-desc">실제 고객 저항을 데이터로 분석한 반박 전략 — 블로그·광고·상담 대화에 활용</div>
+
+  <div class="grid2">
+
+    <div class="obj-card">
+      <div class="obj-question">❌ "월 렌탈/약정이 너무 부담돼요"</div>
+      <div class="obj-answer">초기 목돈 없이 월 정액으로 시작 가능하며, 약정 부담이 걱정이면 유연한 옵션 제시. <strong>'소유'보다 '항상 최신·고장 시 즉시 교체'의 가치</strong>를 강조하세요.</div>
+      <div class="obj-evidence">📊 근거: '렌탈'(23회)·'부담'(23회)·'약정'(39회) 빈번 등장, '월렌탈에 대한 부담감' 패턴 반복</div>
+    </div>
+
+    <div class="obj-card">
+      <div class="obj-question">❌ "세콤/에스원보다 비싸잖아요"</div>
+      <div class="obj-answer">단순 월 요금이 아닌 <strong>'화질 2배·저장기간 2배'를 반영한 단위당 비용으로 재프레이밍.</strong> 동일 화질·기간 기준이면 오히려 저렴함을 표로 제시하세요.</div>
+      <div class="obj-evidence">📊 근거: '세콤 12대 월9만 vs 키퍼 12대 월118,800원', '화질 2배·기간 2배 안내했으나 가격이 중요' — 경쟁사 비교 76건</div>
+    </div>
+
+    <div class="obj-card">
+      <div class="obj-question">❌ "홈캠이 더 싸지 않나요?"</div>
+      <div class="obj-answer">홈캠은 화질·저장·증거능력·사업장 분쟁 대응에서 한계 명확. <strong>'왜 홈캠보다 비쌀 수밖에 없는지' 명확히 설명하면 납득</strong>하고 구매합니다.</div>
+      <div class="obj-evidence">📊 근거: '홈캠보다 비쌀 수밖에 없는 이유에 대해 납득' → 즉시 구매 성공 패턴. '싸'(29회)·'비싸'(27회)</div>
+    </div>
+
+    <div class="obj-card">
+      <div class="obj-question">❌ "1대면 충분한데 그마저 비싸요"</div>
+      <div class="obj-answer">소형/단일 카메라 진입 패키지 제시. <strong>최소 구성으로 시작 후 매장 확장 시 증설하는 단계적 도입</strong> 경로를 안내하세요.</div>
+      <div class="obj-evidence">📊 근거: '1대만 필요하고 가격부담' 패턴, 10평 미만 100건·당근 채널 가격저항 구조</div>
+    </div>
+
+    <div class="obj-card">
+      <div class="obj-question">❌ "할인이나 혜택 없나요?" (반복 질문)</div>
+      <div class="obj-answer">혜택을 반복 질문하는 고객은 <strong>살 의향이 있는 신호</strong>. 신규 오픈 할인·다대수 할인·기간 한정 프로모션을 명확한 조건으로 제시해 결정 트리거로 활용하세요.</div>
+      <div class="obj-evidence">📊 근거: '구매 혜택이 있는지 별도로 여러 번 물어봄' 패턴, '할부'(32회)·'비용'(36회), 구매의향 310건</div>
+    </div>
+
+    <div class="obj-card">
+      <div class="obj-question">❌ "지방인데 A/S가 제대로 올지 모르겠어요"</div>
+      <div class="obj-answer"><strong>전국 설치/A/S 가능 지도 + 평균 대응시간을 구체적으로 명시</strong>. '강원도도 가능합니다'처럼 지역 구체화가 불안 해소에 효과적입니다.</div>
+      <div class="obj-evidence">📊 근거: '강원도여서 AS 걱정', '3년 A/S 기간이 끝나고 원활한 A/S가 될지 걱정' 패턴 반복</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== TIMING ===================== -->
+<div id="section-timing" class="section">
+  <div class="section-title">타이밍 트리거 전략</div>
+  <div class="section-desc">387건(39%) 타이밍 이탈 고객을 회수하는 핵심 진입 포인트</div>
+
+  <div class="grid2">
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">5대 핵심 타이밍 트리거</div>
+
+        <div class="timing-item">
+          <div class="timing-icon">🏗️</div>
+          <div>
+            <div class="timing-title">인테리어 시작~완료 시점</div>
+            <div class="timing-desc">천장·배선 작업과 동시에 CCTV 선시공하면 비용·미관 모두 유리. 인테리어 업체와 제휴로 타이밍 마케팅 가능 <span class="tag tag-orange">인테리어 45회·오픈 47회</span></div>
+          </div>
+        </div>
+
+        <div class="timing-item">
+          <div class="timing-icon">🆕</div>
+          <div>
+            <div class="timing-title">신규 매장 오픈 직전</div>
+            <div class="timing-desc">오픈 체크리스트에 CCTV 포함. '오픈 전 필수 보안 세팅' 메시지로 선처리 수요 공략 <span class="tag tag-orange">오픈/신규 트리거 107건</span></div>
+          </div>
+        </div>
+
+        <div class="timing-item">
+          <div class="timing-icon">📋</div>
+          <div>
+            <div class="timing-title">경쟁사 약정 만료 시점</div>
+            <div class="timing-desc">캡스·세콤·KT텔레캅 약정 종료 1~2개월 전이 전환 골든타임. 철거+신규 설치 원스톱 제안 <span class="tag tag-orange">경쟁사 비교 76건</span></div>
+          </div>
+        </div>
+
+        <div class="timing-item">
+          <div class="timing-icon">🔄</div>
+          <div>
+            <div class="timing-title">매장 인수·업종 전환 시점</div>
+            <div class="timing-desc">새 주인이 기존 보안 체계를 재검토하는 순간. 인수 매장 대상 전환 패키지 제안</div>
+          </div>
+        </div>
+
+        <div class="timing-item">
+          <div class="timing-icon">🚨</div>
+          <div>
+            <div class="timing-title">도난·분쟁 사고 직후</div>
+            <div class="timing-desc">실제 손실 경험 직후 구매의향 급상승. 재관심(33건) 고객 리타겟팅으로 '사고 전에 미리' 메시지 전환</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">타이밍 이탈 회수 전략 — 사전예약 파이프라인</div>
+        <div style="background:var(--bg3);border-radius:10px;padding:16px;margin-top:8px;">
+          <div style="font-size:15px;font-weight:700;color:var(--brand);margin-bottom:12px;">아직 안 사는 고객을 붙잡는 방법</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="background:var(--brand);color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">1</span>
+              <div><strong>랜딩에 '오픈 예정일 입력' 폼 추가</strong><br><span style="color:var(--text2);font-size:13px;">"인테리어 중이에요" → 예정일 저장</span></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="background:var(--brand);color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">2</span>
+              <div><strong>D-14·D-3 자동 알림 발송</strong><br><span style="color:var(--text2);font-size:13px;">"오픈 2주 전! 지금 설치하면 오픈일에 맞춥니다"</span></div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <span style="background:var(--brand);color:white;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">3</span>
+              <div><strong>약정만료 알림 구독 CTA</strong><br><span style="color:var(--text2);font-size:13px;">"약정 끝나는 달에 위약금 없이 갈아타기"</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">리타겟팅 시나리오</div>
+        <div style="margin-top:8px;">
+          <div class="timing-item">
+            <div class="timing-icon" style="font-size:16px;">💻</div>
+            <div>
+              <div class="timing-title" style="font-size:13px;">비교 섹션 조회 후 폼 미작성</div>
+              <div class="timing-desc">'아직 비교 중이세요? 렌탈 3년이면 OO만원 더 냅니다' — 24시간 내 1차, 3일 후 2차</div>
+            </div>
+          </div>
+          <div class="timing-item">
+            <div class="timing-icon" style="font-size:16px;">📅</div>
+            <div>
+              <div class="timing-title" style="font-size:13px;">오픈 예정일 사전예약 후 미구매</div>
+              <div class="timing-desc">'오픈 D-14! 오픈 전 설치하면 영업 첫날부터 지켜집니다' — 예정일 기준 자동 발송</div>
+            </div>
+          </div>
+          <div class="timing-item">
+            <div class="timing-icon" style="font-size:16px;">🔀</div>
+            <div>
+              <div class="timing-title" style="font-size:13px;">경쟁사 비교 LP 방문자</div>
+              <div class="timing-desc">'약정만료 D-day 알림 신청 → 위약금 0원 타이밍에 갈아탈 수 있게 챙겨드립니다'</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CONTENT ===================== -->
+<div id="section-content" class="section">
+  <div class="section-title">콘텐츠 전략</div>
+  <div class="section-desc">블로그·SNS 콘텐츠 아이디어와 6주 캘린더</div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">6주 콘텐츠 캘린더</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px;">
+
+      <div class="cal-week">
+        <div class="cal-week-num">WEEK 1</div>
+        <div class="cal-content">CCTV 렌탈 vs 구매, 3년 쓰면 얼마 차이날까?</div>
+        <div class="cal-detail">
+          <div><span class="tag tag-blue">네이버 블로그</span> <span class="tag tag-purple">인스타</span></div>
+          <div style="margin-top:6px;color:var(--text2);">키워드: cctv 렌탈 비용, 매장 cctv 약정<br>약정·월비용에 지친 경쟁사 고객을 소유형 무약정 총비용 우위로 설득</div>
+        </div>
+      </div>
+
+      <div class="cal-week">
+        <div class="cal-week-num">WEEK 2</div>
+        <div class="cal-content">매장 오픈 전 CCTV 언제 설치해야 할까? 인테리어 단계별 타이밍 가이드</div>
+        <div class="cal-detail">
+          <div><span class="tag tag-blue">네이버 블로그</span> <span class="tag tag-green">스마트플레이스</span></div>
+          <div style="margin-top:6px;color:var(--text2);">키워드: 매장 오픈 준비, 인테리어 cctv 설치 시기<br>타이밍 이탈(39%) 고객을 준비 단계에서 미리 잡는 교육 콘텐츠</div>
+        </div>
+      </div>
+
+      <div class="cal-week">
+        <div class="cal-week-num">WEEK 3</div>
+        <div class="cal-content">에스원·캡스 약정 끝나간다면? 위약금 없이 갈아타는 법</div>
+        <div class="cal-detail">
+          <div><span class="tag tag-blue">네이버 검색 LP</span> <span class="tag tag-blue">블로그</span></div>
+          <div style="margin-top:6px;color:var(--text2);">키워드: 에스원 약정 해지, 캡스 위약금, kt텔레캅 비교<br>약정만료 경쟁사 고객(76건) 정조준, 전환 장벽 직접 해소</div>
+        </div>
+      </div>
+
+      <div class="cal-week">
+        <div class="cal-week-num">WEEK 4</div>
+        <div class="cal-content">'10평 카페 사장님이 키퍼 쓰는 이유' 실사용 후기</div>
+        <div class="cal-detail">
+          <div><span class="tag tag-purple">인스타 릴스</span> <span class="tag tag-blue">네이버 블로그</span></div>
+          <div style="margin-top:6px;color:var(--text2);">키워드: 소형매장 cctv, 카페 cctv 추천<br>주력 고객층(10~20평) 동질감 + 앱 모니터링 편의성 실증</div>
+        </div>
+      </div>
+
+      <div class="cal-week">
+        <div class="cal-week-num">WEEK 5</div>
+        <div class="cal-content">'지방인데 AS 괜찮나요?' Q&A — 설치·사후관리 전국 커버</div>
+        <div class="cal-detail">
+          <div><span class="tag tag-blue">네이버 지식인</span> <span class="tag tag-blue">블로그 FAQ</span></div>
+          <div style="margin-top:6px;color:var(--text2);">키워드: cctv as, 지방 cctv 설치<br>지방 고객 AS 걱정(2순위 저항) 정면 해소</div>
+        </div>
+      </div>
+
+      <div class="cal-week">
+        <div class="cal-week-num">WEEK 6</div>
+        <div class="cal-content">법인·기관 결재용 키퍼 CCTV 제안서 템플릿 무료 제공</div>
+        <div class="cal-detail">
+          <div><span class="tag tag-green">랜딩페이지</span> <span class="tag tag-blue">네이버 검색</span></div>
+          <div style="margin-top:6px;color:var(--text2);">키워드: 법인 cctv 견적, 사업장 cctv 제안<br>내부 결재 필요 고객에게 자료를 대신 만들어 결재 통과 지원</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">SEO 블로그 키워드 전략</div>
+    <table class="seo-table" style="margin-top:12px;">
+      <thead>
+        <tr><th>키워드</th><th>검색 의도</th><th>콘텐츠 아이디어</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>매장 CCTV 렌탈 vs 구매 비교</strong></td><td><span class="intent-badge intent-compare">비교형</span></td><td>월 렌탈 총비용 vs 일시불 구매 3년 시뮬레이션 표</td></tr>
+        <tr><td><strong>세콤 에스원 약정 만료 갈아타기</strong></td><td><span class="intent-badge intent-compare">비교형</span></td><td>보안업체 약정 끝나고 CCTV만 따로 두는 방법 + 비용 절감액</td></tr>
+        <tr><td><strong>소형 매장 CCTV 설치 비용</strong></td><td><span class="intent-badge intent-buy">구매형</span></td><td>10평 이하 가게 CCTV 1~2대 실제 견적과 추천 구성</td></tr>
+        <tr><td><strong>인터넷 없이 CCTV 설치</strong></td><td><span class="intent-badge intent-info">정보형</span></td><td>인터넷 미설치 매장도 CCTV 되는 원리와 설치 방법</td></tr>
+        <tr><td><strong>식당 오픈 CCTV 언제 설치</strong></td><td><span class="intent-badge intent-info">정보형</span></td><td>인테리어-집기-오픈 일정별 CCTV 설치 최적 타이밍 가이드</td></tr>
+        <tr><td><strong>직원 관리 CCTV 추천</strong></td><td><span class="intent-badge intent-buy">구매형</span></td><td>근태/현금 사고/접객 분쟁 막는 매장용 CCTV 활용법</td></tr>
+        <tr><td><strong>홈캠 매장용 안되는 이유</strong></td><td><span class="intent-badge intent-info">정보형</span></td><td>가정용 홈캠으로 가게 운영하다 생기는 5가지 문제</td></tr>
+        <tr><td><strong>CCTV 비용처리 세금계산서</strong></td><td><span class="intent-badge intent-info">정보형</span></td><td>사업 비용처리·절세 관점의 실속 정보 (캐시노트 타겟)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===================== AD COPY ===================== -->
+<div id="section-adcopy" class="section">
+  <div class="section-title">광고 소재 라이브러리</div>
+  <div class="section-desc">실제 고객 언어 기반으로 만든 즉시 사용 가능한 광고 카피</div>
+
+  <div class="grid3">
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-blue">구글</span></div>
+      <div class="copy-headline">"약정 끝났다면, 화질 2배 키퍼로"</div>
+      <div class="copy-body">캡스·세콤 약정 만료? 철거부터 설치까지 한 번에. 같은 값에 화질·저장기간 2배.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 '캡스 약정만료 갈아타기' 검색 의도 정조준</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-yellow">페이스북</span></div>
+      <div class="copy-headline">"우리 가게, 사고 나기 전엔 몰라요"</div>
+      <div class="copy-body">도난·손님 분쟁 한 번이면 월 구독료보다 큰 손실. CCTV 1대부터 시작하세요.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 저관여 페북 유입에 문제 인식 먼저 자극</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-green">네이버</span></div>
+      <div class="copy-headline">"한화비전 키퍼 매장 견적"</div>
+      <div class="copy-body">10평부터 50평까지, 우리 가게 맞춤 견적 1분 확인. 약정 부담 없이 시작.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 구매 직전 고객 — 즉시 견적 제공이 전환 핵심</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-yellow">페이스북</span></div>
+      <div class="copy-headline">"홈캠으로 버티다 후회하기 전에"</div>
+      <div class="copy-body">사업장 분쟁엔 증거가 필요합니다. 홈캠과 다른 고화질·장기보관 키퍼.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 '홈캠보다 비싼 이유 납득 → 즉시 구매' 패턴 활용</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-green">네이버</span></div>
+      <div class="copy-headline">"월 정액으로 끝내는 매장 보안"</div>
+      <div class="copy-body">초기 목돈 0원. 매출 지키는 투자, 비용처리도 가능합니다.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 캐시노트 채널 — ROI·절세 관점으로 어필</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-blue">구글</span></div>
+      <div class="copy-headline">"세콤·에스원보다 비싸다? 다시 계산해보세요"</div>
+      <div class="copy-body">화질 2배·저장 2배 기준이면 키퍼가 단위당 더 저렴. 비교표 확인.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 비교검토 247건 — 가격 저항 정면 돌파</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-yellow">페이스북</span> <span class="tag tag-purple">인스타</span></div>
+      <div class="copy-headline">"신규 오픈? CCTV는 인테리어 전에"</div>
+      <div class="copy-body">배선 작업과 동시 설치하면 비용·미관 둘 다 이득. 오픈 전 필수 체크.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 오픈/신규 타이밍 트리거 107건 공략</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-purple">인스타</span></div>
+      <div class="copy-headline">"\"오픈 전날인데 설치 돼요?\" — 네, 당겨드립니다"</div>
+      <div class="copy-body">실제 고객 발언: '하루라도 설치일을 당기고 싶다'. 오픈 일정 맞춰드립니다.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 실제 고객 발언을 그대로 후크로 — 공감 최대화</div>
+    </div>
+
+    <div class="copy-box">
+      <div class="copy-channel-badge"><span class="tag tag-green">네이버</span></div>
+      <div class="copy-headline">"1대부터, 약정 없이 가볍게"</div>
+      <div class="copy-body">소형 매장 맞춤 패키지. 작은 가게 사장님들이 선택한 키퍼 CCTV.</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">💡 10평 미만 100건 + 당근 채널 가격저항 공략</div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title" style="font-size:16px;">후기·사례 스토리 시나리오</div>
+  <div class="grid2" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-title">📖 시나리오 1 — 약정 갈아타기</div>
+      <div style="font-size:14px;margin-top:8px;line-height:1.7;">에스원/세콤 쓰다 <strong>약정 만료 후 키퍼로 갈아탄 사장님</strong><br><br>→ 핵심 메시지: <em>"매달 나가던 보안 요금, 한 번 사고 끝냈습니다"</em></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📖 시나리오 2 — 오픈 임박 설치</div>
+      <div style="font-size:14px;margin-top:8px;line-height:1.7;">오픈 임박해 급하게 신청했는데 <strong>설치일을 당겨 무사히 영업 시작</strong>한 사장님<br><br>→ 핵심 메시지: <em>"오픈 일정 안 밀리게 설치까지 맞춰줍니다"</em></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📖 시나리오 3 — 분쟁 해결</div>
+      <div style="font-size:14px;margin-top:8px;line-height:1.7;">직원 현금 사고 / 고객 무단투기를 <strong>CCTV로 잡아낸 매장 사례</strong><br><br>→ 핵심 메시지: <em>"증거가 있으니 분쟁이 끝납니다"</em></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📖 시나리오 4 — 지방 A/S 안심</div>
+      <div style="font-size:14px;margin-top:8px;line-height:1.7;">강원도/지방 매장인데 <strong>A/S 걱정 없이 잘 쓰고 있는 사장님</strong><br><br>→ 핵심 메시지: <em>"지방이라도 사후관리는 똑같습니다"</em></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== LANDING ===================== -->
+<div id="section-landing" class="section">
+  <div class="section-title">랜딩페이지 개선 포인트</div>
+  <div class="section-desc">고객 실제 언어 기반으로 도출한 전환율 향상 요소</div>
+
+  <div class="grid2">
+
+    <div class="lp-card">
+      <div class="lp-element">1. 히어로 영역 — 가격 비교 모듈</div>
+      <div class="lp-issue">❌ 현재: '가격이 비싸다' 저항이 첫 화면에서 해소되지 않음</div>
+      <div class="lp-solution">상단에 '렌탈 3년 누적 vs 키퍼 1회 구매' 비교 그래프를 즉시 노출. 첫 3초 안에 비교 우위를 보여줘야 이탈 방지.</div>
+      <div class="lp-quote">"렌탈은 매달 나가서 부담돼요" / "결국 내 게 아니잖아요"</div>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-element">2. 오픈 예정일 사전예약 폼</div>
+      <div class="lp-issue">❌ 현재: '준비 중' 고객(39%)이 그냥 이탈</div>
+      <div class="lp-solution">'오픈 예정일 입력하면 그 시점에 맞춰 연락드려요' 폼 추가로 리드 보존. D-14·D-3 자동 알림 연결.</div>
+      <div class="lp-quote">"아직 인테리어 중이라" / "오픈하면 그때 할게요"</div>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-element">3. 약정만료 비교 섹션</div>
+      <div class="lp-issue">❌ 현재: 경쟁사 쓰던 고객이 갈아탈 명분과 비용 근거가 없음</div>
+      <div class="lp-solution">에스원/캡스/KT텔레캅 월비용 입력 → 키퍼 전환 절감액 자동 계산기. '약정만료 계산기'로 결정 트리거 제공.</div>
+      <div class="lp-quote">"에스원 약정 곧 끝나는데" / "캡스 너무 비싸요"</div>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-element">4. A/S·전국 설치 안심 배지</div>
+      <div class="lp-issue">❌ 현재: 지방 고객이 사후관리 불안으로 망설임</div>
+      <div class="lp-solution">'전국 설치/A/S 가능' 지도 + 평균 대응시간 명시. 지역별 설치 사례 수 노출로 신뢰 형성.</div>
+      <div class="lp-quote">"지방인데 고장나면 누가 와요?"</div>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-element">5. 법인·기관용 견적·제안서 다운로드</div>
+      <div class="lp-issue">❌ 현재: 결재 받아야 하는 고객이 자료가 없어 진행 멈춤</div>
+      <div class="lp-solution">이메일 입력 시 결재용 제안서 PDF 자동 발송. 법인 고객 의사결정 단계 지원.</div>
+      <div class="lp-quote">"윗선 결재 받아야 해서요" / "견적서 좀 보내주세요"</div>
+    </div>
+
+    <div class="lp-card">
+      <div class="lp-element">6. 평형별 견적 시뮬레이터</div>
+      <div class="lp-issue">❌ 현재: 가격 정보를 얻으려면 상담 신청을 해야 함</div>
+      <div class="lp-solution">'10평 미만 / 10~20평 / 20~30평 / 50평 이상' 버튼 클릭 → 즉시 대수·월비용 노출. 진입 마찰 최소화.</div>
+      <div class="lp-quote">"화질이랑 저장기간이 얼마나 되나요?" / "견적이 어떻게 되나요?"</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== ACTIONS ===================== -->
+<div id="section-actions" class="section">
+  <div class="section-title">즉시 실행 액션 플랜</div>
+  <div class="section-desc">데이터 기반 우선순위 순서 — Priority 1부터 착수</div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
+
+    <div class="action-card" style="border-left:4px solid var(--green);">
+      <div class="action-num" style="background:var(--green);">1</div>
+      <div>
+        <div class="action-title">네이버 오가닉 콘텐츠 집중 투자</div>
+        <div class="action-desc">최고 성과 채널(구매의향 47%, 평균 44.2점)에 블로그·지식인·스마트플레이스 콘텐츠를 즉시 보강. 경쟁사 약정만료·렌탈 비교·평형별 견적 키워드 공략.</div>
+        <div class="action-channel"><span class="tag tag-green">네이버 블로그</span> <span class="tag tag-green">지식인</span> <span class="tag tag-green">스마트플레이스</span></div>
+        <div class="action-impact">📈 최고 전환 채널 유입량 1.5~2배 확대 시 전체 구매의향 리드 직접 증가</div>
+      </div>
+    </div>
+
+    <div class="action-card" style="border-left:4px solid var(--green);">
+      <div class="action-num" style="background:var(--green);">2</div>
+      <div>
+        <div class="action-title">약정만료 경쟁사 전환 LP + 계산기 제작</div>
+        <div class="action-desc">에스원/캡스/KT텔레캅 비교 LP에 '약정만료 절감액 계산기' 추가. 경쟁사 월비용 입력 → 3년 절감액 자동 산출. 네이버 검색광고와 연결.</div>
+        <div class="action-channel"><span class="tag tag-orange">랜딩페이지</span> <span class="tag tag-green">네이버 검색광고</span></div>
+        <div class="action-impact">📈 비교검토 247건 + 경쟁사 언급 76건 — 전환 가속 최대 기회</div>
+      </div>
+    </div>
+
+    <div class="action-card" style="border-left:4px solid var(--green);">
+      <div class="action-num" style="background:var(--green);">3</div>
+      <div>
+        <div class="action-title">타이밍 이탈 회수 — 오픈 예정일 사전예약 파이프라인</div>
+        <div class="action-desc">랜딩에 '오픈 예정일 입력' 폼 추가 → D-14·D-3 자동 알림톡 발송. 지금 당장 안 사도 인테리어/오픈 시점에 재접촉하는 자동화 구축.</div>
+        <div class="action-channel"><span class="tag tag-orange">랜딩페이지</span> <span class="tag tag-blue">카카오 알림톡</span></div>
+        <div class="action-impact">📈 타이밍 이탈 39%(387건) 중 상당수를 '예약 풀'로 전환, 손실 방지</div>
+      </div>
+    </div>
+
+    <div class="action-card" style="border-left:4px solid var(--yellow);">
+      <div class="action-num" style="background:var(--yellow);">4</div>
+      <div>
+        <div class="action-title">당근마켓 예산 50% 축소 → 네이버 이동</div>
+        <div class="action-desc">당근마켓(이탈 60%, 평균 24.8점)의 광고 예산을 절반으로 축소하고 네이버로 재배분. 동일 예산으로 전체 CAC 하락 효과.</div>
+        <div class="action-channel"><span class="tag tag-red">당근마켓 감소</span> → <span class="tag tag-green">네이버 증가</span></div>
+        <div class="action-impact">📈 동일 예산 대비 낭비 광고비 즉시 절감, ROI 개선</div>
+      </div>
+    </div>
+
+    <div class="action-card" style="border-left:4px solid var(--yellow);">
+      <div class="action-num" style="background:var(--yellow);">5</div>
+      <div>
+        <div class="action-title">가격 저항 대응 — 렌탈 vs 소유형 비교 카드뉴스</div>
+        <div class="action-desc">'월 OO원 vs 렌탈 누적비용' 한 장 이미지(카드뉴스) 제작해 모든 채널 공통 배포. '비싸다'는 1순위 저항을 소유형 장기 절감 논리로 정면 반박.</div>
+        <div class="action-channel"><span class="tag tag-blue">전 채널 공통</span></div>
+        <div class="action-impact">📈 가격저항 137건(14%) — 비교검토 단계 이탈 감소 기대</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-title">KPI 기준점</div>
+    <div class="grid3" style="margin-top:16px;">
+      <div style="text-align:center;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:6px;">Primary KPI</div>
+        <div style="font-size:18px;font-weight:800;color:var(--brand);">구매의향 리드 수</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px;">채널별 구매의향률 가중 집계</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:6px;">네이버 오가닉 기준선</div>
+        <div style="font-size:18px;font-weight:800;color:var(--green);">47% 구매의향률</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px;">다른 채널이 목표로 삼을 벤치마크</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:6px;">타이밍 이탈 목표</div>
+        <div style="font-size:18px;font-weight:800;color:var(--yellow);">39% → 25%</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px;">사전예약 파이프라인으로 감소 목표</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+
+</body>
+</html>
